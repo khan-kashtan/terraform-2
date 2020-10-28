@@ -1,0 +1,30 @@
+{
+    "builders": [
+        {
+            "type": "googlecompute",
+            "project_id": "{{user `def_project_id`}}",
+            "image_name": "reddit-app-base-{{timestamp}}",
+            "image_family": "reddit-app-base",
+            "source_image_family": "{{user `def_source_image_family` }}",
+            "zone": "{{user `zone`}}",
+            "ssh_username": "{{user `username`}}",
+            "machine_type": "{{user `def_machine_type`}}",
+            "tags": "ssh-allow"
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "script": "scripts/install_ruby.sh",
+            "execute_command": "sudo {{.Path}}"
+        },
+        {
+            "type": "shell",
+            "inline": [
+                "cd ~/ && git clone -b monolith https://github.com/express42/reddit.git",
+                "cd reddit && bundle install",
+                "puma -d"
+            ]
+        }
+    ]
+}
